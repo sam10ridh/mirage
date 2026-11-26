@@ -21,11 +21,8 @@ from mirage.mpk.persistent_kernel import PersistentKernel
 BATCH = 4
 PADDED = 153600
 VOCAB = 151936
-NUM_TASKS = 96  # PADDED divides evenly; chunk = 1600
-CHUNK = PADDED // NUM_TASKS
-# One winner per row: an in-chunk position, the chunk-94 boundary cases
-# (150400 starts the chunk that straddles VOCAB; 151935 is the last real
-# position), and a mid-vocab position.
+NUM_TASKS = 144  # does not divide PADDED, so rows are wider than the split
+# One winner per row; 151935 is the last real position.
 WINNERS = [5, 150400, 151935, 77777]
 
 
@@ -40,6 +37,7 @@ def main():
     params.update(test_mode=True, num_workers=num_workers,
                   num_local_schedulers=num_schedulers,
                   max_num_batched_tokens=BATCH, max_num_batched_requests=BATCH,
+                  max_num_pages=BATCH,
                   meta_tensors={"qo_indptr_buffer": qo_indptr})
     pk = PersistentKernel(**params)
 

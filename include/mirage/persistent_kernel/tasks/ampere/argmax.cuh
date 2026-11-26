@@ -74,7 +74,8 @@ template <typename T,
           int BATCH_SIZE,
           int CHUNK_SIZE,
           int NUM_PARTIAL_TASKS,
-          int VOCAB_SIZE = CHUNK_SIZE *NUM_PARTIAL_TASKS>
+          int VOCAB_SIZE = CHUNK_SIZE *NUM_PARTIAL_TASKS,
+          int ROW_SIZE = CHUNK_SIZE *NUM_PARTIAL_TASKS>
 __device__ __forceinline__ void
     argmax_partial_kernel(void const *__restrict__ input_ptr,
                           void *__restrict__ output_val_ptr,
@@ -97,7 +98,7 @@ __device__ __forceinline__ void
     long long local_idx = -1;
 #pragma unroll
     for (int i = tidx; i < valid_len; i += NUM_THREADS) {
-      T val = input[i + batch_idx * CHUNK_SIZE * NUM_PARTIAL_TASKS];
+      T val = input[i + batch_idx * ROW_SIZE];
       if (val > local_max || (local_idx < 0 && val == local_max)) {
         local_max = val;
         local_idx = i;
