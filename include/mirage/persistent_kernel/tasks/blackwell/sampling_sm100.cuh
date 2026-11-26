@@ -165,7 +165,8 @@ template <typename T,
           int CHUNK_SIZE,
           int NUM_PARTIAL_TASKS,
           int TOPK_MAX,
-          int VOCAB_SIZE = CHUNK_SIZE *NUM_PARTIAL_TASKS>
+          int VOCAB_SIZE = CHUNK_SIZE *NUM_PARTIAL_TASKS,
+          int ROW_SIZE = CHUNK_SIZE *NUM_PARTIAL_TASKS>
 __device__ __forceinline__ void
     sampling_partial_sm100_kernel(void const *__restrict__ input_ptr,
                                   void *__restrict__ output_val_ptr,
@@ -206,12 +207,10 @@ __device__ __forceinline__ void
 
   for (int batch_idx = 0; batch_idx < num_active_tokens; batch_idx++) {
     for (int i = tidx; i < CHUNK_SIZE; i += NUM_THREADS) {
-      chunk[i] =
-          i < valid_len
-              ? static_cast<float>(
-                    input[i + batch_idx * CHUNK_SIZE * NUM_PARTIAL_TASKS]) *
-                    inv_temperature
-              : -INFINITY;
+      chunk[i] = i < valid_len
+                     ? static_cast<float>(input[i + batch_idx * ROW_SIZE]) *
+                           inv_temperature
+                     : -INFINITY;
     }
     bar.arrive_and_wait();
 

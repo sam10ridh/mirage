@@ -956,11 +956,12 @@ int TaskRegister::register_argmax_partial_task(threadblock::Graph const &bgraph,
 
   mirage::transpiler::CodeKeeper code;
   code.inc_indent();
-  code.e("kernel::argmax_partial_kernel<bfloat16, $, $, $, $>(",
+  code.e("kernel::argmax_partial_kernel<bfloat16, $, $, $, $, $>(",
          batch_size,
          num_elements,
          num_partial_tasks,
-         vocab_size);
+         vocab_size,
+         input_ops[0]->dtensor.dim[1]);
   code.e("    task_desc->input_ptrs[0],");
   code.e("    task_desc->output_ptrs[0],");
   code.e("    task_desc->output_ptrs[1],");
@@ -2467,11 +2468,12 @@ int TaskRegister::register_argmax_partial_sm100_task(
 
   mirage::transpiler::CodeKeeper code;
   code.inc_indent();
-  code.e("kernel::argmax_partial_sm100_kernel<bfloat16, $, $, $, $>(",
+  code.e("kernel::argmax_partial_sm100_kernel<bfloat16, $, $, $, $, $>(",
          batch_size,
          num_elements,
          num_partial_tasks,
-         vocab_size);
+         vocab_size,
+         input_ops[0]->dtensor.dim[1]);
   code.e("    task_desc->input_ptrs[0],");
   code.e("    task_desc->output_ptrs[0],");
   code.e("    task_desc->output_ptrs[1],");
@@ -2588,12 +2590,13 @@ int TaskRegister::register_sampling_partial_sm100_task(
 
   mirage::transpiler::CodeKeeper code;
   code.inc_indent();
-  code.e("kernel::sampling_partial_sm100_kernel<bfloat16, $, $, $, $, $>(",
+  code.e("kernel::sampling_partial_sm100_kernel<bfloat16, $, $, $, $, $, $>(",
          batch_size,
          num_elements,
          num_partial_tasks,
          topk_max,
-         vocab_size);
+         vocab_size,
+         input_ops[0]->dtensor.dim[1]);
   code.e("    task_desc->input_ptrs[0],");
   code.e("    task_desc->output_ptrs[0],");
   code.e("    task_desc->output_ptrs[1],");
